@@ -12,6 +12,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,6 +41,9 @@ public class Controller {
 
             Elements links = document.select("ul.tb-img").first().select("li a");
             Elements thumnails = document.select("ul.tb-thumb").first().select( "li img");
+            Elements contentImages = document.select("#description img");
+
+            System.out.println("images size s are : " + contentImages.size());
 
             for (Element e : links)
             {
@@ -64,6 +70,18 @@ public class Controller {
                 String imageLink = e2.attr("data-src").replace("_50x50.jpg", "");
                 if(!imageLink.startsWith("https:"))
                     imageLink = "https:" + imageLink;
+
+                    downloadSingleImage(imageLink);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+            for (Element e2: contentImages)
+            {
+                try {
+                    System.out.println("download image link in content");
+                    String imageLink = e2.attr("data-ks-lazyload");
 
                     downloadSingleImage(imageLink);
                 } catch (Exception e1) {
@@ -113,8 +131,26 @@ public class Controller {
 
         FileOutputStream out = (new FileOutputStream(new java.io.File(path + imageName)));
         out.write(resultImageResponse.bodyAsBytes());  // resultImageResponse.body() is where the image's contents are.
+
         out.close();
+
+        if (imageName.endsWith("gif"))
+        {
+            convertGIFtoJPG(new java.io.File(path + imageName));
+        }
+
     }
+
+    private static void convertGIFtoJPG(File gifFile ) throws IOException
+    {
+        BufferedImage gifImg = ImageIO.read(gifFile);
+
+        File jpgFile = new File(gifFile.getParent() + "/" + gifFile.getName().replace(".gif", ".jpg"));
+
+        ImageIO.write(gifImg, "jpg", jpgFile);
+        gifFile.delete();
+    }
+
 
     public void watermark()
     {
@@ -125,4 +161,5 @@ public class Controller {
         Watermark.mass(dir);
          watermarkTF.setOpacity(1);
     }
+
 }

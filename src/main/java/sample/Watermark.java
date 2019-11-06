@@ -15,6 +15,8 @@ public class Watermark {
 
 
             File watermarkFile = new File("C:\\Users\\MYN\\Desktop\\tranbg.png");
+
+            BufferedImage toteWM = ImageIO.read(new File("C:\\Users\\MYN\\Desktop\\tote.png"));
             BufferedImage watermark = ImageIO.read(watermarkFile);
             BufferedImage image = ImageIO.read(imageFile);
 
@@ -23,6 +25,8 @@ public class Watermark {
             graphics.setPaintMode();
             graphics.drawImage(watermark, 0, 0, null );
             graphics.setFont(new Font("Arial", Font.PLAIN, 30));
+
+            graphics.drawImage(toteWM, (image.getWidth() - toteWM.getWidth())/2, (image.getHeight() - toteWM.getHeight())/2, null );
 
             graphics.drawString(str, 40,40);
 
